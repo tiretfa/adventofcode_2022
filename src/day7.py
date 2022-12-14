@@ -1,3 +1,6 @@
+TOTAL_SPACE = 70000000
+NEEDED_SPACE = 30000000
+
 class Folder(object):
     def __init__(self, name, previous):
         self.name = name
@@ -39,6 +42,16 @@ class Folder(object):
                     res += size
                 res += child.get_folder_sizes()
         return res
+    
+    def find_two_star(self, need_space):
+        folders = []
+        for child in self.children:
+            if isinstance(child, Folder):
+                size = child.get_size()
+                if size > need_space:
+                    folders.append(size)
+                folders.extend(child.find_two_star(need_space))
+        return folders
 
 class File(object):
     def __init__(self, name, size):
@@ -66,3 +79,5 @@ with open('data/day7.txt') as f:
             current_folder.append_file(name, size)
             
 print(init.get_folder_sizes())
+need_space = abs(TOTAL_SPACE - init.get_size() - NEEDED_SPACE)
+print(min(init.find_two_star(need_space)))
